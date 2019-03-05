@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load blog_tags %}
+{% load humanize %}
+
+{% block main %}
+    {% if error_msg %}
+        <p>{{ error_msg }}</p>
+    {% endif %}
+    {% block before_main_left %}{% endblock %}
+    <div class="panel-body panel-subtitle">
+        <span class="label label-success">{{ panel_title }}</span>
+        {% if show_order %}
+          <span class="pull-right ordering">
+            Order:
+            <span>
+              <a href="{% change_post_ordering request '-views' %}">Most Viewed</a>
+            </span>
+            <span>
+              <a href="{% change_post_ordering request '-pub_date' %}">Post Date</a>
+            </span>
+          </span>
+        {% endif %}
+    </div>
+    <!-- List group -->
+    <ul class="list-group post-list">
+        {% for post in post_list %}
+            <li class="list-group-item post-entry">
+                <div class="entry media">
+                    <div class="media-left media-middle">
+                        <a class="list-avatar-link" href="{% url 'focus:user_info' post.author.pk %}"></a>
+                    </div>
+                    <div class="media-body media-middle">
+                        <a href="{% url 'focus:detail' pk=post.pk %}" class="entry-link">
+                            {{ post.title }}
+                        </a>
+                        <p class="entry-meta">
+                            <span class="meta">
+                                <a href="{% url 'focus:category' post.category.pk %}">
+                                    <span class="label label-default meta-node">
+                                    {{ post.category.name }}
+                                    </span>
+                                </a>
+                            </span>
+                            <span class="meta meta-username">
+                                <a href="{% url 'focus:user_info' post.author.pk %}">
+                                    {{ post.author.username }}
+                                </a>
+                            </span>
+                            <span class="meta meta-pub_date">
+                                {{ post.pub_date | naturaltime }}
+                            </span>
+                            <span class="meta meta-last_replied hidden-xs">
+                                 "Last Edited": {{ post.update_time | naturaltime }}
+                            </span>
+                        </p>
+                    </div>
+                    <div class="media-right media-middle">
+                        <span class="badge">{{ post.comment_set.count }}</span>
+                    </div>
+                </div>
+            </li>
+        {% empty %}
+            <div class="no-post">暂时还没有发布的信息！</div>
+        {% endfor %}
+    </ul>
+    <div class="panel-footer">
+        {% get_pagination %}
+    </div>
+{% endblock main %}

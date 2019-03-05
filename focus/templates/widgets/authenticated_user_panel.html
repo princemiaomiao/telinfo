@@ -1,0 +1,45 @@
+{% load blog_tags %}
+<div class="panel panel-default">
+    <!--<div class="panel-heading">NIJI APP</div>-->
+    <div class="panel-body user-panel">
+        <div class="panel-user-info">
+            <div class="avatar-name">
+                <span class="panel-username"><a href="{% url 'focus:user_info' request.user.pk %}">{{ request.user.username }}</a></span>
+            </div>
+            <div class="row panel-user-meta">
+                <div class="col-xs-6 panel-user-meta-item">
+                    <a href="{% url 'focus:user_posts' request.user.pk %}">
+                        <div class="text-center">
+                            <p class="panel-user-meta-item-value">
+                                {{ request.user.post.count }}
+                            </p>
+                            <p class="panel-user-meta-item-title">Posts</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-xs-6 panel-user-meta-item">
+                    <a href="{% url 'focus:user_info' request.user.pk %}">
+                        <div class="text-center">
+                            <p class="panel-user-meta-item-value">{{ request.user.pk }}</p>
+                            <p class="panel-user-meta-item-title">UID</p>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item">
+            <a href="{% url 'focus:create_post' %}">
+                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                Create Post
+            </a>
+        </li>
+        <li class="list-group-item">
+            <a href="{% url 'focus:logout' %}">
+                <span class="glyphicon glyphicon-log-out" aria-hidden="true"></span>
+                Log out
+            </a>
+        </li>
+    </ul>
+</div>

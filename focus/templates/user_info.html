@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load blog_tags %}
+
+{% block main %}
+    {% include 'widgets/user_info_panel.html' %}
+    <div class="panel panel-default">
+        <div class="panel-body panel-subtitle">
+            <span class="label label-success">
+                    Posts created by {{ user.username }}
+            </span>
+        </div>
+        <!-- List group -->
+        <ul class="list-group post-list">
+            {% for post in posts %}
+                <li class="list-group-item post-entry">
+                    <div class="entry media">
+                        <div class="media-body media-middle">
+                            <a href="{% url 'focus:detail' pk=post.pk %}" class="entry-link">
+                                {{ post.title }}
+                            </a>
+                            <p class="entry-meta">
+                                <a href="{% url 'focus:category' post.category.pk %}">
+                                        <span class="label label-default meta-node">
+                                        {{ post.category.name }}
+                                        </span>
+                                </a>
+                                    <span class="meta meta-pub_date">
+                                        {{ post.pub_date | naturaltime }}
+                                    </span>
+                                    <span class="meta meta-last_replied hidden-xs">
+                                        Last Modified: {{ post.update_time | naturaltime }}
+                                    </span>
+                            </p>
+                        </div>
+                        <div class="media-right media-middle">
+                            <span class="badge">{{ post.comment_set.count }}</span>
+                        </div>
+                    </div>
+                </li>
+            {% endfor %}
+            <li class="list-group-item">
+                <a href="{% url 'focus:user_posts' user.pk %}" class="text-success">More posts from this user</a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="panel panel-default">
+        <div class="panel-body panel-subtitle">
+            <span class="label label-success">
+                    Comments from {{ user.username }}
+            </span>
+        </div>
+        <!-- List group -->
+        <ul class="list-group topic-list">
+            {% for comment in comments %}
+                <li class="list-group-item reply-entry reply-entry-title">
+                    Commented to
+                    <a href="{% url 'focus:detail' pk=comment.post.pk %}">{{ comment.post.title }}</a>
+                    <span class="pull-right">{{ comment.pub_date | naturaltime }}</span>
+                </li>
+                <li class="list-group-item reply-entry reply-entry-content">
+                    <p>{{ comment.content | safe }}</p>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

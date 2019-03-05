@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load highlight %}
+{% load blog_tags %}
+{% load humanize %}
+
+{% block main %}
+    {% if query %}
+        <div class="panel-body panel-subtitle">
+            <span class="label label-success">panel_title</span>
+        </div>
+        <!-- List group -->
+        <ul class="list-group topic-list">
+            {% for result in page.object_list %}
+                <li class="list-group-item topic-entry">
+                    <div class="entry media">
+                        <div class="media-left media-middle">
+                            <a class="list-avatar-link" href="{% url 'focus:user_info' result.object.author.pk %}"></a>
+                        </div>
+                        <div class="media-body media-middle">
+                            <a href="{% url 'focus:detail' pk=result.object.pk %}" class="entry-link">
+                                {% highlight result.object.title with query %}
+                            </a>
+                            <p class="entry-meta">
+                                <span class="meta">
+                                    <a href="{% url 'focus:category' result.object.category.pk %}">
+                                        <span class="label label-default meta-node">
+                                        {{ result.object.category.name }}
+                                        </span>
+                                    </a>
+                                </span>
+                                <span class="meta meta-username">
+                                    <a href="{% url 'focus:user_info' result.object.author.pk %}">
+                                        {{ result.object.author }}
+                                    </a>
+                                </span>
+                                <span class="meta meta-pub_date">
+                                    {{ result.object.pub_date | naturaltime }}
+                                </span>
+                                <span class="meta meta-last_replied hidden-xs">
+                                     "Last Edited": {{ result.object.update_time | naturaltime }}
+                                </span>
+                            </p>
+                        </div>
+                        <div class="media-right media-middle">
+                            <span class="badge">{{ result.object.comment_set.count }}</span>
+                        </div>
+                    </div>
+                </li>
+            {% empty %}
+                <div class="no-post">没有搜索到你想要的结果！</div>
+            {% endfor %}
+        </ul>
+        {% if page.has_previous or page.has_next %}
+            <div>
+                {% if page.has_previous %}
+                    <a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">{% endif %}&laquo; Previous
+                {% if page.has_previous %}</a>{% endif %}
+                |
+                {% if page.has_next %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}Next
+                &raquo;{% if page.has_next %}</a>{% endif %}
+            </div>
+        {% endif %}
+    {% else %}
+        请输入搜索关键词，例如 django
+    {% endif %}
+{% endblock main %}

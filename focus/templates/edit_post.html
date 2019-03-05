@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block main %}
+    <div class="panel panel-default">
+        <div class="panel-body">
+            <form method="post" action="{% url 'focus:edit_post' pk=form.instance.pk %}">
+                {% crispy form %}
+            </form>
+        </div>
+    </div>
+{% endblock %}

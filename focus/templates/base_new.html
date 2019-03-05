@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html class="no-js">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PHONE RECORD</title>
+    {% load staticfiles %}
+    {% load blog_tags %}
+    <!-- Bootstrap -->
+    <link href="{% static "bootstrap/css/bootstrap.min.css"%}" rel="stylesheet" media="screen">
+    <link href="{% static "bootstrap/css/bootstrap-responsive.min.css"%}" rel="stylesheet" media="screen">
+    <link href="{% static "assets/styles.css"%}" rel="stylesheet" media="screen">
+    <link href="{% static "assets/DT_bootstrap.css"%}" rel="stylesheet" media="screen">
+    <link href="{% static "assets/buttons.dataTables.min.css"%}" rel="stylesheet" media="screen">
+    <link href="{% static "assets/ace.css"%}" rel="stylesheet" class="ace-main-stylesheet" id="main-ace-style" />
+    <!--[if lte IE 8]>
+        <script language="javascript" type="text/javascript" src="{% static "vendors/flot/excanvas.min.js"%}"></script>
+    <![endif]-->
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+        <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <script src="{% static "vendors/modernizr-2.6.2-respond-1.1.0.min.js"%}"></script>
+</head>
+
+<body>
+    <div class="navbar navbar-fixed-top">
+        <div class="navbar-inner">
+            <div class="container-fluid">
+                <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> <span class="icon-bar"></span>
+                 <span class="icon-bar"></span>
+                 <span class="icon-bar"></span>
+                </a>
+                <a class="brand" href="#">Phone Record</a>
+                <div class="nav-collapse collapse">
+                    <ul class="nav pull-right">
+                        <li class="dropdown">
+                            <a href="#" role="button" class="dropdown-toggle" data-toggle="dropdown"> <i class="icon-user"></i>{{ request.user.username }} <i class="caret"></i>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a tabindex="-1" href="{% url 'focus:user_info' request.user.pk %}">Profile</a>
+                                </li>
+                                <li class="divider"></li>
+                                <li>
+                                    <a tabindex="-1" href="{% url 'focus:logout' %}">登出</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <ul class="nav">
+                        <li class="active">
+                            <a href="{% url 'focus:index' %}">Index</a>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" data-toggle="dropdown" class="dropdown-toggle">Settings <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu" id="menu1">
+                                <li>
+                                    <a href="#">Tools <i class="icon-arrow-right"></i>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#">Other Link</a>
+                                </li>
+                                <li class="divider"></li>
+                                <li>
+                                    <a href="#">Other Link</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" role="button" class="dropdown-toggle" data-toggle="dropdown">Content <i class="caret"></i>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a tabindex="-1" href="#">News</a>
+                                </li>
+                                <li class="divider"></li>
+                                <li>
+                                    <a tabindex="-1" href="#">FAQ</a>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <!--/.nav-collapse -->
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="span3" id="sidebar">
+                <ul class="nav nav-list bs-docs-sidenav nav-collapse collapse">
+                    <li>
+                        <a href="{% url 'focus:index' %}"><i class="icon-chevron-right"></i> 列表</a>
+                    </li>
+                    <li>
+                        <a href="{% url 'focus:create_post' %}"><i class="icon-chevron-right"></i> 新建</a>
+                    </li>
+                    <li>
+                        <a href="#"> 最新记录<span class="badge badge-success pull-right">5</span></a>
+                        {% get_recent_posts request as recent_post_list %}
+                        <ul>
+                            {% for post in recent_post_list %}
+                            <li>
+                                <a href="{{ post.get_absolute_url }}">{{ post.title }}</a>
+                            </li>
+                            {% empty %}
+                                暂无记录！
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    <li>{% archives as date_list %}
+                        <a href="#"> 归档<span class="badge badge-info pull-right">{{ date_list.count }}</span></a>
+                        <ul>
+                            {% for date in date_list %}
+                                <li>
+                                    <a href="{% url 'focus:archives' date.year date.month %}">{{ date.year }}
+                                        年 {{ date.month }} 月</a>
+                                </li>
+                            {% empty %}
+                                暂无归档！
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    <li>{% get_categories request as category_list %}
+                        <a href="#"> 分类<span class="badge badge-important pull-right">{{ category_list.count }}</span></a>
+                        <ul>
+                            {% for category in category_list %}
+                                <li>
+                                    <a href="{% url 'focus:category' category.pk %}">{{ category.name }} <span
+                                            class="post-count">({{ category.num_posts }})</span></a>
+                                </li>
+                            {% empty %}
+                                暂无分类！
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    <li>{% get_tags as tag_list %}
+                        <a href="#"> 标签云<span class="badge badge-warning pull-right">{{ tag_list.count }}</span></a>
+                        <ul>
+                            {% for tag in tag_list %}
+                                <li>
+                                    <a href="{% url 'focus:tag' tag.pk %}">{{ tag.name }}</a>
+                                </li>
+                            {% empty %}
+                                暂无标签！
+                            {% endfor %}
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <!--/span-->
+            <div class="span9" id="content">
+                <div class="row-fluid">
+                    <div class="block">
+                    {% block main %}
+                    {% endblock main %}
+                    </div>
+                </div>
+            </div>
+            <div class="span9" id="content">
+                <div class="row-fluid">
+                    <p class="copyright">&copy 2017 - 采集自<a href="http://www.cssmoban.com/"
+                                                            target="_blank" title="模板之家">模板之家</a>
+                        - 由<a href="http://www.sjd-logistics.com/" title="网页模板" target="_blank">景鸿物流修改</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!--/.fluid-container-->
+    <script src="{% static "vendors/jquery-1.9.1.min.js"%}"></script>
+    <script src="{% static "vendors/jquery.maskedinput.js"%}"></script>
+    <script src="{% static "bootstrap/js/bootstrap.min.js"%}"></script>
+    <script src="{% static "vendors/datatables/js/jquery.dataTables.min.js"%}"></script>
+    <script src="{% static "assets/DT_bootstrap.js"%}"></script>
+    <script src="{% static "assets/dataTables.buttons.min.js"%}"></script>
+    <script src="{% static "assets/buttons.flash.min.js"%}"></script>
+    <script src="{% static "assets/jszip.min.js"%}"></script>
+    <script src="{% static "assets/buttons.html5.min.js"%}"></script>
+    <script src="{% static "assets/buttons.print.min.js"%}"></script>
+    <script src="{% static "assets/buttons.colVis.min.js"%}"></script>
+    <script src="{% static "assets/scripts.js"%}"></script>
+    <script type="text/javascript">
+    jQuery(function ($){
+        $('.input-mask-phone').mask('(999) 9999-9999');
+    });
+    </script>
+</body>
+
+</html>

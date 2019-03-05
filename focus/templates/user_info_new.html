@@ -1,0 +1,118 @@
+{% extends 'base_new.html' %}
+{% load humanize %}
+{% load blog_tags %}
+
+{% block main %}
+    {% if error_msg %}
+        <div class="alert alert-success">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <h4>Error</h4>
+                    {{ error_msg }}</div>
+    {% endif %}
+    <div class="navbar">
+        <div class="navbar-inner">
+            <ul class="breadcrumb">
+                <i class="icon-chevron-left hide-sidebar"><a href='#' title="Hide Sidebar" rel='tooltip'>&nbsp;</a></i>
+                <i class="icon-chevron-right show-sidebar" style="display:none;"><a href='#' title="Show Sidebar" rel='tooltip'>&nbsp;</a></i>
+                <li>
+                    <a href="{% url 'focus:index' %}">Home</a> <span class="divider">/</span>
+                </li>
+                <li class="active">{{ user.username }}创建的记录</li>
+            </ul>
+        </div>
+    </div>
+    {% include 'widgets/user_info_panel_new.html' %}
+    <div class="block-content collapse in">
+        <div class="span12">
+        <!-- List group -->
+            <div>
+                <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="example2">
+                    <thead>
+                        <tr>
+                            <th>记录号</th>
+                            <th>行业</th>
+                            <th>公司</th>
+                            <th>业务范围</th>
+                            <th>咨询主旨</th>
+                            <th>咨询结果</th>
+                            <th>价单</th>
+                            <th>创建人</th>
+                            <th>创建日期</th>
+                            <th>评论</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for post in posts %}
+                            <tr class="odd gradeA">
+                                <td class="center">{{ post.record_id }}</td>
+                                <td><a href="{% url 'focus:category' post.category.pk %}">
+                                        {{ post.category.name }}
+                                    </a></td>
+                                <td class="center">{{ post.company_name }}</td>
+                                <td class="center">
+                                    {% for name in post.tags.all %}
+                                        {{ name }}
+                                    {% endfor %}</td>
+                                <td><a href="{% url 'focus:detail' pk=post.pk %}" class="entry-link">
+                                        {{ post.title }}
+                                    </a>
+                                </td>
+                                <td class="center">{{ post.result }}</td>
+                                <td class="center">{{ post.pricing }}</td>
+                                <td><a href="{% url 'focus:user_info' post.author.pk %}">
+                                        {{ post.author.username }}
+                                    </a></td>
+                                <td class="center">{{ post.pub_date | date:"Y-m-d H:i:s" }}</td>
+                                <td><span class="badge badge-info">{{ post.comment_set.count }}</span></td>
+                            </tr>
+                            {% empty %}
+                            <div>暂时还没有发布的信息！</div>
+                            {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <li class="list-group-item">
+                <a href="{% url 'focus:user_posts' user.pk %}" class="text-success">More posts from this user</a>
+            </li>
+        </div>
+    </div>
+    <div class="block-content collapse in">
+        <div class="span12">
+            <div class="widget-box transparent">
+                <div class="widget-header widget-header-small">
+                    <h4 class="widget-title blue smaller">
+                        <i class="icon-edit"></i>
+                        来自{{ user.username }}的评论
+                    </h4>
+                </div>
+                <div class="widget-body">
+                    <div class="widget-main padding-8">
+                        <!-- #section:pages/profile.feed -->
+                        <div id="profile-feed-1" class="profile-feed">
+                            <div class="profile-activity clearfix">
+                                <div>
+                                {% if comments.count %}
+                                    {% for comment in comments %}
+                                        Commented to
+                                        <a class="user" href="{% url 'focus:detail' pk=comment.post.pk %}">{{ comment.post.title }}</a>
+                                        <div>{{ comment.content | safe}}</div>
+                                        <div class="time">
+                                            <i class="ace-icon fa fa-clock-o bigger-110"></i>
+                                            {{ comment.pub_date | naturaltime }}
+                                        </div>
+                                        <div class="space-12"></div>
+                                    {% endfor %}
+                                {% else %}
+                                    {% if not comments %}
+                                        <li class="list-group-item comment-item">此用户还没有评论!</li>
+                                    {% endif %}
+                                {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

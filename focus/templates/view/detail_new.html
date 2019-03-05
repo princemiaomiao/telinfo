@@ -1,0 +1,193 @@
+{% extends 'base_new.html' %}
+{% load blog_tags %}
+{% load humanize %}
+{% load crispy_forms_tags %}
+
+{% block main %}
+    {% if error_msg %}
+        <div class="alert alert-success">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <h4>Error</h4>
+                    {{ error_msg }}</div>
+    {% endif %}
+    {% block before_main_left %}{% endblock %}
+    <div class="navbar">
+        <div class="navbar-inner">
+            <ul class="breadcrumb">
+                <i class="icon-chevron-left hide-sidebar"><a href='#' title="Hide Sidebar" rel='tooltip'>&nbsp;</a></i>
+                <i class="icon-chevron-right show-sidebar" style="display:none;"><a href='#' title="Show Sidebar" rel='tooltip'>&nbsp;</a></i>
+                <li>
+                    <a href="{% url 'focus:index' %}">Home</a> <span class="divider">/</span>
+                </li>
+                <li><a href="{% url 'focus:category' pk=post.category.pk %}">{{ post.category.name }}</a><span class="divider">/</span></li>
+                <li class="active">{{ post.title }}</li>
+            </ul>
+        </div>
+    </div>
+    <div class="block-content collapse in">
+        <div class="span12">
+            <div class="page-header">
+                <h1>
+                    咨询详情
+                    <small>
+                        <i class="icon-chevron-right"></i>
+                            {{ post.title }}
+                    </small>
+                </h1>
+            </div><!-- /.page-header -->
+            <div class="col-xs-12 col-sm-9">
+                <div class="profile-user-info profile-user-info-striped">
+                    <div class="profile-info-row">
+                        <div class="profile-info-name"> 记录流水号 </div>
+                        <div class="profile-info-value">
+                            <span id="username">{{ post.record_id }}</span>
+                        </div>
+                    </div>
+                    <div class="profile-info-row">
+                        <div class="profile-info-name"> 记录人 </div>
+                        <div class="profile-info-value">
+                            <span id="username">{{ post.author.username }}</span>
+                        </div>
+                    </div>
+                    <div class="profile-info-row">
+                        <div class="profile-info-name"> 公司名 </div>
+                        <div class="profile-info-value">
+                            <span id="username">{{ post.company_name }}</span>
+                        </div>
+                    </div>
+                    <div class="profile-info-row">
+                        <div class="profile-info-name"> 电话 </div>
+                        <div class="profile-info-value">
+                            <span id="username">{{ post.tel_no }}</span>
+                        </div>
+                    </div>
+                    <div class="profile-info-row">
+                        <div class="profile-info-name"> 咨询者 </div>
+                        <div class="profile-info-value">
+                            <span id="username">{{ post.consultee }}</span>
+                        </div>
+                    </div>
+                    <div class="profile-info-row">
+                        <div class="profile-info-name"> 所属行业 </div>
+                        <div class="profile-info-value">
+                            <span id="username">{{ post.category.name }}</span>
+                        </div>
+                    </div>
+                    <div class="profile-info-row">
+                        <div class="profile-info-name"> 咨询范围 </div>
+                        <div class="profile-info-value">
+                            <span id="username">
+                                {% for name in post.tags.all %}
+                                    {{ name }}
+                                {% endfor %}</span>
+                        </div>
+                    </div>
+                    <div class="profile-info-row">
+                        <div class="profile-info-name"> 咨询内容 </div>
+                        <div class="profile-info-value">
+                            <span id="username">{{ post.content | safe}}</span>
+                        </div>
+                    </div>
+                    <div class="profile-info-row">
+                        <div class="profile-info-name"> 上门人员 </div>
+                        <div class="profile-info-value">
+                            <span id="username">{{ post.assign_person }}</span>
+                        </div>
+                    </div>
+                    <div class="profile-info-row">
+                        <div class="profile-info-name"> 咨询结果 </div>
+                        <div class="profile-info-value">
+                            <span id="username">{{ post.result }}</span>
+                        </div>
+                    </div>
+                    <div class="profile-info-row">
+                        <div class="profile-info-name"> 协议价单 </div>
+                        <div class="profile-info-value">
+                            <span id="username">{{ post.pricing }}</span>
+                        </div>
+                    </div>
+                    <div class="profile-info-row">
+                        <div class="profile-info-name"> 备注 </div>
+                        <div class="profile-info-value">
+                            <span id="username">{{ post.remarks }}</span>
+                        </div>
+                    </div>
+                </div>
+                {% if request.user == post.author %}
+                    <div class="panel-footer">
+                        {% if not post.published %}
+                            <a href="{% url 'focus:edit_post' pk=post.pk %}"><span class="label label-success">编辑</span></a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+                <div class="space-12"></div>
+
+                <div class="center">
+                    <span class="btn btn-app btn-sm btn-light no-hover">
+                        <span class="line-height-1 bigger-170 blue"> {{ post.views }} </span>
+                        <br />
+                        <span class="line-height-1 smaller-90"> Views </span>
+                    </span>
+                    <span class="btn btn-app btn-sm btn-grey no-hover">
+                        <span class="line-height-1 bigger-170"> {{ post.comment_set.count }} </span>
+
+                        <br />
+                        <span class="line-height-1 smaller-90"> Comments </span>
+                    </span>
+                </div>
+                <div class="space-12"></div>
+                <div class="widget-box transparent">
+                    <div class="widget-header widget-header-small">
+                        <h4 class="widget-title blue smaller">
+                            <i class="icon-edit"></i>
+                            最新评论
+                        </h4>
+                    </div>
+                    <div class="widget-body">
+                        <div class="widget-main padding-8">
+                            <!-- #section:pages/profile.feed -->
+                            <div id="profile-feed-1" class="profile-feed">
+                                <div class="profile-activity clearfix">
+                                    <div>
+                                        {% if post.comment_set.count %}
+                                            {% for comment in comment_list %}
+                                                <a class="user" href="{% url 'focus:user_info' comment.user_id %}">{{ comment.user }}</a>
+                                                {{ comment.content | safe}}
+                                                <div class="time">
+                                                    <i class="ace-icon fa fa-clock-o bigger-110"></i>
+                                                    {{ comment.pub_date | naturaltime }}
+                                                </div>
+                                            {% endfor %}
+                                        {% else %}
+                                            {% if not comment_list %}
+                                                <li class="list-group-item comment-item">Be the first to reply!</li>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-12"></div>
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">添加评论</div>
+                    <div class="panel-body">
+                        {% if request.user.is_authenticated %}
+                            <form action="{% url 'focus:detail' pk=post.pk %}" method="POST">
+                                {% crispy form %}
+                            </form>
+                        {% else %}
+                            <div class="alert alert-warning" role="alert">
+                                {% url login_url_name as login_url %}
+                                    Please <a href="{{ login_url }}">Login</a> to comment
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock main %}

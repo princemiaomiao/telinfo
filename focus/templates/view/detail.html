@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load blog_tags %}
+{% load humanize %}
+{% load crispy_forms_tags %}
+
+{% block main %}
+    <div class="panel panel-default">
+     <!-- Default panel contents -->
+        <div class="panel-body">
+            <ol class="breadcrumb">
+                <li><a href="{% url 'focus:index' %}">Home</a></li>
+                <li><a href="{% url 'focus:category' pk=post.category.pk %}">{{ post.category.name }}</a></li>
+                <li class="active">{{ post.title }}</li>
+            </ol>
+            <h1 class="post-title">{{ post.title }}</h1>
+            <div class="post-meta row">
+                <div class="col-xs-9 col-sm-10">
+                    <p class="text-muted">
+                        <a href="{% url 'focus:user_info' post.author.pk %}">{{ post.author.username }}</a>
+                        <br/>
+                        <span>Posted {{ post.pub_date | naturaltime }} in <a class="text-primary" href="{% url 'focus:category' pk=post.category.pk %}">{{ post.category.name }}</a>, </span>
+                        <span>Viewed {{ post.views }} times</span>
+                    </p>
+                </div>
+            </div>
+            <div class="post-content">
+                <p>{{ post.content | safe}}</p>
+            </div>
+        </div>
+        {% if request.user == post.author %}
+            <div class="panel-footer">
+                {% if not post.published %}
+                    <a href="{% url 'focus:edit_post' pk=post.pk %}"><span class="label label-success">Edit</span></a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            {% if post.comment_set.count %}
+                {{ post.comment_set.count }} Reply {{ post.comment_set.count }} Replies
+            {% else %}
+                No Comments
+            {% endif %}
+        </div>
+        <!-- List group -->
+        <ul class="list-group comment-list">
+            {% for comment in comment_list %}
+                <li class="list-group-item comment-item">
+                    <div class="post-meta row">
+                        <div class="col-xs-9 col-sm-10">
+                            <p class="text-muted">
+                                <a href="{% url 'focus:user_info' comment.user_id %}">{{ comment.user }}</a> <br/>
+                                <span>{{ comment.pub_date | naturaltime }}</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="comment-content">
+                        <p>
+                            {{ comment.content | safe}}
+                        </p>
+                    </div>
+                    <p class="comment-link">
+                        <a href="#" data-username="{{ comment.user.username }}" class="reply-to">Reply</a>
+                    </p>
+                </li>
+            {% endfor %}
+            {% if not comment_list %}
+                <li class="list-group-item comment-item"><p>Be the first to reply!</p></li>
+            {% endif %}
+        </ul>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Leave a Comment</div>
+        <div class="panel-body">
+            {% if request.user.is_authenticated %}
+                <form action="{% url 'focus:detail' pk=post.pk %}" method="POST">
+                    {% crispy form %}
+                </form>
+            {% else %}
+                <div class="alert alert-warning" role="alert">
+                    {% url login_url_name as login_url %}
+                        Please <a href="{{ login_url }}">Login</a> to comment
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock main %}
