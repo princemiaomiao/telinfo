@@ -156,6 +156,8 @@ class CategoryView(ListView):
 class TagView(ListView):
     model = Post
     template_name = 'view/index_new.html'
+    template_name = 'view/index_new.html'
+    template_name = 'view/index_new.html'
     context_object_name = 'post_list'
 
     def get_queryset(self):
