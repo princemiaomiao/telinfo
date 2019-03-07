@@ -264,8 +264,6 @@ def user_info(request, pk):
 class UserTopics(ListView):
     model = Comment
     template_name = 'user_posts_new.html'
-    template_name = 'user_posts_new.html'
-    template_name = 'user_posts_new.html'
     context_object_name = 'post_list'
 
     def get_queryset(self):
